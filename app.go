@@ -21,6 +21,7 @@ func main() {
 
 	server.GET("/api/v1/pokemon", getPokemonResource)
 	server.GET("/api/v1/pokemon/:name", getPokemon)
+	server.GET("/api/v1/pokemon/search", searchPokemon)
 
 	server.Run("localhost:8080")
 }
@@ -47,6 +48,13 @@ func getPokemon(context *gin.Context) {
 	pokemon := service.GetPokemon(name)
 	context.JSON(http.StatusOK, pokemon)
 	fmt.Println(pokemon)
+}
+
+func searchPokemon(context *gin.Context) {
+	searchTerm := context.Query("term")
+	resourceResponse := service.SearchResource("pokemon", searchTerm)
+	context.JSON(http.StatusOK, resourceResponse)
+	fmt.Println(resourceResponse)
 }
 
 func getOffsetAndLimit(context *gin.Context) (int, int, error){

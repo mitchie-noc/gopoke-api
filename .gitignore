@@ -1,0 +1,47 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go Build Artifacts
+*.out
+
+# Directories created by the Go tools
+/vendor/
+
+# IDE and Editor Files
+.idea/
+*.swp
+*.swo
+*.vscode/
+*.code-workspace
+
+# Logs and debugging
+*.log
+
+# Dependency Caching
+/go.sum
+/go.mod
+go.sum.old
+go.mod.old
+
+# Build Output
+bin/
+*.test
+*.o
+
+# Temporary Files
+*.tmp
+*.temp
+*~
+
+# Coverage Files
+*.cover
+*.coverage
+*.lcov
+
+# Config and secrets (if any)
+.env
+
+pokeNotes.txt

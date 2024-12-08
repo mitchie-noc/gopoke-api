@@ -1,4 +1,4 @@
-package mapper
+package pokemon
 
 import (
 	"github.com/mtslzr/pokeapi-go/structs"

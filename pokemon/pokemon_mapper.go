@@ -1,6 +1,7 @@
 package pokemon
 
 import (
+	"github.com/mitchie-noc/gopoke-api/ability"
 	"github.com/mtslzr/pokeapi-go/structs"
 )
 
@@ -9,6 +10,7 @@ type Pokemon struct {
 	Sprite string
 	Stats []Stat
 	Types []Type
+	Abilities []ability.Ability
 }
 
 type Stat struct {
@@ -29,7 +31,15 @@ func MapPokemon(original structs.Pokemon) Pokemon{
 	pokemon.Sprite = original.Sprites.FrontDefault
 	mapPokemonStats(original, &pokemon)
 	mapPokemonTypes(original, &pokemon)
+	mapPokemonAbilities(original, &pokemon)
 	return pokemon
+}
+
+func mapPokemonAbilities(original structs.Pokemon, target *Pokemon) {
+	for _, element := range original.Abilities {
+		ability := ability.GetAbility(element.Ability.Name)
+		target.Abilities = append(target.Abilities, ability)
+	}
 }
 
 func mapPokemonStats(original structs.Pokemon, target *Pokemon) {

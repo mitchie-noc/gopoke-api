@@ -4,7 +4,6 @@ import (
 	"github.com/mtslzr/pokeapi-go/structs"
 )
 
-
 type Nature struct {
 	Name string
 	Decreased_Stat string

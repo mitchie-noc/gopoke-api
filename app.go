@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"strconv"
-	"strings"
+	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
-	"ryantest.com/learningGo/service"
+	"github.com/mitchie-noc/gopoke-api/resource"
+	"github.com/mitchie-noc/gopoke-api/nature"
+	"github.com/mitchie-noc/gopoke-api/pokemon"
 )
 
 type ApiError struct {
@@ -21,9 +22,38 @@ func main() {
 
 	server.GET("/api/v1/pokemon", getPokemonResource)
 	server.GET("/api/v1/pokemon/:name", getPokemon)
-	server.GET("/api/v1/pokemon/search", searchPokemon)
+	server.GET("/api/v1/pokemon/search", searchPokemonResource)
+	server.GET("/api/v1/nature", getAllNatures)
+	server.GET("/api/v1/nature/:name", getNature)
 
 	server.Run("localhost:8080")
+}
+
+func getPokemon(context *gin.Context) {
+	name := context.Param("name")
+	pokemonRespone := pokemon.GetPokemon(name)
+	context.JSON(http.StatusOK, pokemonRespone)
+}
+
+func getNature(context *gin.Context) {
+	name := context.Param("name")
+	natureResponse := nature.GetNature(name)
+	context.JSON(http.StatusOK, natureResponse)
+}
+
+func getAllNatures(context *gin.Context) {
+	natureResponse := nature.GetAllNatures()
+	context.JSON(http.StatusOK, natureResponse)
+}
+
+func getPokemonNatures(context *gin.Context) {
+	offset, limit, err := getOffsetAndLimit(context)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, ApiError{"GoPoke-0001", "Invalid query params for offset / limit"})
+		return
+	}
+	resourceResponse := resource.GetResource(offset, limit, "nature")
+	context.JSON(http.StatusOK, resourceResponse)
 }
 
 func getPokemonResource(context *gin.Context) {
@@ -32,29 +62,14 @@ func getPokemonResource(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, ApiError{"GoPoke-0001", "Invalid query params for offset / limit"})
 		return
 	}
-
-	resourceResponse := service.GetResource("pokemon", offset, limit)
-	resourceResponse.Next = strings.Replace(resourceResponse.Next, "https://pokeapi.co/api/v2", "http://localhost:8080/api/v1",1)
-	previousOffset := offset-limit
-	if previousOffset < 0 {
-		previousOffset = 0
-	}
-	resourceResponse.Previous = fmt.Sprintf("http://localhost:8080/api/v1/pokemon?offset=%d&limit=%d",previousOffset, limit)
+	resourceResponse := resource.GetResource(offset, limit, "pokemon")
 	context.JSON(http.StatusOK, resourceResponse)
 }
 
-func getPokemon(context *gin.Context) {
-	name := context.Param("name")
-	pokemon := service.GetPokemon(name)
-	context.JSON(http.StatusOK, pokemon)
-	fmt.Println(pokemon)
-}
-
-func searchPokemon(context *gin.Context) {
+func searchPokemonResource(context *gin.Context) {
 	searchTerm := context.Query("term")
-	resourceResponse := service.SearchResource("pokemon", searchTerm)
+	resourceResponse := resource.SearchResource(searchTerm, "pokemon")
 	context.JSON(http.StatusOK, resourceResponse)
-	fmt.Println(resourceResponse)
 }
 
 func getOffsetAndLimit(context *gin.Context) (int, int, error){
@@ -85,4 +100,3 @@ func getOffsetAndLimit(context *gin.Context) (int, int, error){
 	}
 	return offset, limit, nil
 }
-

@@ -100,12 +100,3 @@ func getOffsetAndLimit(context *gin.Context) (int, int, error){
 	}
 	return offset, limit, nil
 }
-
-
-
-
-
-
-
-
-
